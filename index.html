@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Udbhav — Happy Birthday</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+SC:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --black: #000000;
+      --surface: #080808;
+      --surface-2: #101010;
+      --border: rgba(255,255,255,0.07);
+      --border-mid: rgba(255,255,255,0.13);
+      --white: #ffffff;
+      --silver: #b8b8b8;
+      --muted: #555555;
+      --gold: #C4A94E;
+      --gold-light: #dfc06e;
+      --gold-dim: rgba(196,169,78,0.12);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'DM Mono', monospace;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* Grain overlay */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23g)' opacity='0.055'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 100;
+      opacity: 1;
+    }
+
+    /* ===== CURSOR ===== */
+    .cur { position: fixed; width: 10px; height: 10px; border-radius: 50%; background: var(--gold); pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); transition: width .25s, height .25s; }
+    .cur-f { position: fixed; width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(196,169,78,.35); pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: all .25s cubic-bezier(.25,.46,.45,.94); }
+
+    /* ===== HERO ===== */
+    .hero {
+      height: 100vh;
+      min-height: 680px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #star-canvas { position: absolute; inset: 0; z-index: 0; }
+
+    /* Orbit rings — absolutely centered in hero */
+    .orbit-sys {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .orbit {
+      position: absolute;
+      border-radius: 50%;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      border: 1px solid;
+    }
+    .o1 { width: 280px; height: 280px; border-color: rgba(196,169,78,.22); animation: spin 22s linear infinite; }
+    .o2 { width: 400px; height: 400px; border-color: rgba(255,255,255,.06); animation: spin 34s linear infinite reverse; }
+    .o3 { width: 540px; height: 540px; border-color: rgba(196,169,78,.06); animation: spin 50s linear infinite; }
+
+    /* Dot on orbit ring o1 */
+    .o1::after {
+      content: '';
+      position: absolute;
+      width: 6px; height: 6px;
+      background: var(--gold);
+      border-radius: 50%;
+      top: -3px; left: 50%;
+      transform: translateX(-50%);
+      box-shadow: 0 0 10px var(--gold);
+    }
+
+    @keyframes spin {
+      from { transform: translate(-50%,-50%) rotate(0deg); }
+      to   { transform: translate(-50%,-50%) rotate(360deg); }
+    }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(196,169,78,0); }
+      50%       { box-shadow: 0 0 40px 6px rgba(196,169,78,.12); }
+    }
+
+    /* Hero content */
+    .hero-inner {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 0;
+    }
+
+    /* BMW Logo */
+    .bmw-logo {
+  width: 150px;
+  height: 150px;
+  margin-bottom: 52px;
+  border-radius: 50%;
+  overflow: hidden;
+  animation: pulse-glow 4s ease-in-out infinite;
+}
+    .bmw-logo svg { width: 100%; height: 100%; }
+
+    .hero-eyebrow {
+      font-size: .6rem;
+      letter-spacing: .38em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: fadeUp .9s .4s forwards;
+    }
+
+    .hero-name {
+      font-family: 'Cormorant SC', serif;
+      font-size: clamp(5rem, 14vw, 13rem);
+      font-weight: 300;
+      line-height: .88;
+      letter-spacing: -.02em;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(255,255,255,.75);
+      opacity: 0;
+      animation: fadeUp .9s .6s forwards;
+    }
+
+    .hero-tagline {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.1rem, 3.5vw, 2rem);
+      font-style: italic;
+      color: var(--silver);
+      font-weight: 300;
+      margin-top: 18px;
+      letter-spacing: .06em;
+      opacity: 0;
+      animation: fadeUp .9s .8s forwards;
+    }
+
+    .hero-sub {
+      font-size: .58rem;
+      letter-spacing: .32em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-top: 48px;
+      opacity: 0;
+      animation: fadeUp .9s 1s forwards;
+    }
+
+    /* Scroll hint */
+    .scroll-hint {
+      position: absolute;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      z-index: 2;
+      opacity: 0;
+      animation: fadeUp .9s 1.4s forwards;
+    }
+    .scroll-hint-label {
+      font-size: .5rem;
+      letter-spacing: .3em;
+      color: var(--muted);
+      text-transform: uppercase;
+      writing-mode: vertical-lr;
+    }
+    .scroll-hint-line {
+      width: 1px;
+      height: 56px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: line-pulse 2s ease-in-out infinite;
+    }
+    @keyframes line-pulse {
+      0%, 100% { opacity: 1; transform: scaleY(1) translateY(0); }
+      50%       { opacity: .3; transform: scaleY(.6) translateY(5px); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== SECTION LABEL ===== */
+    .sec-label {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: .58rem;
+      letter-spacing: .3em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 36px;
+    }
+    .sec-label::after {
+      content: '';
+      height: 1px;
+      width: 44px;
+      background: var(--gold);
+      opacity: .55;
+    }
+
+    /* ===== DIVIDER ===== */
+    .hr { width: 100%; height: 1px; background: var(--border); position: relative; }
+    .hr::before {
+      content: '';
+      position: absolute;
+      left: 7%; top: 0;
+      width: 90px;
+      height: 1px;
+      background: var(--gold);
+    }
+
+    /* ===== BROTHERHOOD ===== */
+    .brotherhood {
+      padding: 160px 8% 130px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 100px;
+      align-items: center;
+      position: relative;
+      background: linear-gradient(to bottom, #000 0%, #060606 100%);
+    }
+    .bhood-bg-num {
+      position: absolute;
+      top: 60px; right: 5%;
+      font-family: 'Cormorant SC', serif;
+      font-size: min(22rem, 30vw);
+      font-weight: 300;
+      color: rgba(255,255,255,.02);
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+    }
+    .bhood-text h2 {
+      font-family: 'Cormorant SC', serif;
+      font-size: clamp(2.8rem, 5.5vw, 5rem);
+      font-weight: 300;
+      line-height: 1.0;
+      letter-spacing: -.02em;
+      margin-bottom: 36px;
+    }
+    .bhood-text p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.05rem, 1.8vw, 1.3rem);
+      line-height: 1.95;
+      color: var(--silver);
+      font-weight: 300;
+      margin-bottom: 22px;
+    }
+    .bhood-photo {
+      position: relative;
+      overflow: hidden;
+      border-radius: 3px;
+      aspect-ratio: 3/4;
+      max-height: 640px;
+    }
+    .bhood-photo img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      filter: grayscale(15%);
+      transition: transform .9s cubic-bezier(.25,.46,.45,.94), filter .5s;
+    }
+    .bhood-photo:hover img { transform: scale(1.06); filter: grayscale(0%); }
+    .bhood-photo::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(196,169,78,.1), transparent 55%);
+      z-index: 1;
+      pointer-events: none;
+    }
+    .bhood-photo::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,.6) 0%, transparent 45%);
+      z-index: 1;
+      pointer-events: none;
+    }
+    .photo-tag {
+      position: absolute;
+      bottom: 22px; left: 22px;
+      z-index: 2;
+      font-size: .56rem;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.5);
+    }
+
+    /* ===== GALLERY ===== */
+    .gallery-section {
+      padding: 130px 8% 150px;
+      position: relative;
+      background: linear-gradient(to bottom, #060606 0%, #000 100%);
+    }
+    .gallery-bg-num {
+      position: absolute;
+      top: 60px; left: 4%;
+      font-family: 'Cormorant SC', serif;
+      font-size: min(22rem, 30vw);
+      font-weight: 300;
+      color: rgba(255,255,255,.02);
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+    }
+    .gallery-header { margin-bottom: 70px; position: relative; z-index: 1; }
+    .gallery-header h2 {
+      font-family: 'Cormorant SC', serif;
+      font-size: clamp(3rem, 7vw, 6.5rem);
+      font-weight: 300;
+      letter-spacing: -.025em;
+      line-height: .95;
+    }
+    .gallery-header p {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      color: var(--muted);
+      font-size: 1.1rem;
+      margin-top: 14px;
+      letter-spacing: .04em;
+    }
+
+    /* Editorial asymmetric grid */
+    .gal {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      grid-auto-rows: auto;
+      gap: 14px;
+      position: relative;
+      z-index: 1;
+    }
+    .g {
+      position: relative;
+      overflow: hidden;
+      border-radius: 3px;
+      cursor: pointer;
+      background: var(--surface-2);
+    }
+    .g img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .9s cubic-bezier(.25,.46,.45,.94), filter .5s;
+      filter: grayscale(20%);
+    }
+    .g:hover img { transform: scale(1.09); filter: grayscale(0%); }
+    .g::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,.72) 0%, transparent 55%);
+      z-index: 1;
+      transition: opacity .5s;
+    }
+    .g:hover::after { opacity: .55; }
+    .g-cap {
+      position: absolute;
+      bottom: 18px; left: 18px;
+      z-index: 2;
+      font-size: .56rem;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.55);
+    }
+    .g-num {
+      position: absolute;
+      top: 16px; right: 16px;
+      z-index: 2;
+      font-size: .5rem;
+      letter-spacing: .2em;
+      color: rgba(196,169,78,.6);
+    }
+
+    /* Grid positions */
+    .g1 { grid-column: 1/6;  aspect-ratio: 4/3; }
+    .g2 { grid-column: 6/13; aspect-ratio: 4/3; }
+    .g3 { grid-column: 1/5;  aspect-ratio: 4/3; }
+    .g4 { grid-column: 5/9;  grid-row: 2/4; aspect-ratio: 3/4; }
+    .g5 { grid-column: 9/13; aspect-ratio: 4/3; }
+
+    /* ===== QUOTE ===== */
+    .quote-section {
+      padding: 170px 10%;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(to bottom, #000 0%, #050505 100%);
+    }
+    .quote-bg-inf {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      font-size: min(42rem, 60vw);
+      color: rgba(255,255,255,.018);
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+      font-family: serif;
+    }
+    .quote-gold-line {
+      width: 1px;
+      height: 60px;
+      background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+      margin: 0 auto 56px;
+      position: relative;
+      z-index: 1;
+    }
+    .big-quote {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.4rem, 3.5vw, 2.9rem);
+      font-weight: 300;
+      font-style: italic;
+      line-height: 1.65;
+      color: var(--silver);
+      max-width: 820px;
+      margin: 0 auto 50px;
+      position: relative;
+      z-index: 1;
+    }
+    .big-quote .hl { color: var(--white); font-weight: 400; }
+    .quote-attr {
+      font-size: .6rem;
+      letter-spacing: .32em;
+      color: var(--gold);
+      text-transform: uppercase;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ===== FINALE ===== */
+    .finale {
+      padding: 160px 8% 180px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: end;
+      border-top: 1px solid var(--border);
+      position: relative;
+      background: linear-gradient(to bottom, #050505, #000);
+    }
+    .finale-bg-num {
+      position: absolute;
+      bottom: 40px; right: 4%;
+      font-family: 'Cormorant SC', serif;
+      font-size: min(22rem, 30vw);
+      font-weight: 300;
+      color: rgba(255,255,255,.02);
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+    }
+    .finale-text h2 {
+      font-family: 'Cormorant SC', serif;
+      font-size: clamp(3.5rem, 8vw, 7.5rem);
+      font-weight: 300;
+      line-height: .88;
+      letter-spacing: -.03em;
+      margin-bottom: 36px;
+    }
+    .finale-text h2 .outline {
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(255,255,255,.35);
+    }
+    .gold-sep { width: 72px; height: 1px; background: var(--gold); margin: 44px 0; opacity: .8; }
+    .finale-text p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+      line-height: 1.95;
+      color: var(--silver);
+      font-weight: 300;
+      max-width: 460px;
+      margin-bottom: 18px;
+    }
+
+    .finale-logo {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+    .finale-logo-wrap {
+      width: 220px;
+      height: 220px;
+      position: relative;
+    }
+    .finale-logo-wrap svg { animation: spin 70s linear infinite; }
+    .finale-orbit {
+      position: absolute;
+      border-radius: 50%;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      border: 1px solid;
+      pointer-events: none;
+    }
+    .fo1 { width: 290px; height: 290px; border-color: rgba(196,169,78,.15); animation: spin 28s linear infinite; }
+    .fo2 { width: 380px; height: 380px; border-color: rgba(255,255,255,.05); animation: spin 42s linear infinite reverse; }
+
+    /* ===== FOOTER ===== */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 36px 8%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .foot-l { font-size: .56rem; letter-spacing: .24em; text-transform: uppercase; color: var(--muted); }
+    .foot-r {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: .95rem;
+      font-style: italic;
+      color: var(--muted);
+    }
+
+    /* ===== REVEAL ===== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(44px);
+      transition: opacity 1s cubic-bezier(.25,.46,.45,.94), transform 1s cubic-bezier(.25,.46,.45,.94);
+    }
+    .reveal.vis { opacity: 1; transform: translateY(0); }
+    .rd1 { transition-delay: .1s; }
+    .rd2 { transition-delay: .22s; }
+    .rd3 { transition-delay: .36s; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 900px) {
+      .brotherhood {
+        grid-template-columns: 1fr;
+        gap: 52px;
+        padding: 100px 6% 80px;
+      }
+      .bhood-bg-num { display: none; }
+      .bhood-photo { max-height: 480px; }
+
+      .finale {
+        grid-template-columns: 1fr;
+        gap: 60px;
+        padding: 100px 6%;
+      }
+      .finale-bg-num { display: none; }
+      .finale-logo { order: -1; }
+      .finale-logo-wrap { width: 180px; height: 180px; }
+      .fo1 { width: 240px; height: 240px; }
+      .fo2 { display: none; }
+
+      .gallery-section { padding: 90px 5% 100px; }
+      .gallery-bg-num { display: none; }
+
+      .g1 { grid-column: 1/13; }
+      .g2 { grid-column: 1/13; grid-row: 2; }
+      .g3 { grid-column: 1/7;  grid-row: 3; }
+      .g4 { grid-column: 7/13; grid-row: 3/5; }
+      .g5 { grid-column: 1/7;  grid-row: 4; }
+
+      .o3 { display: none; }
+    }
+
+    @media (max-width: 600px) {
+      .bmw-logo { width: 120px; height: 120px; margin-bottom: 40px; }
+      .o2 { display: none; }
+
+      .gal { gap: 8px; }
+      .g1, .g2, .g3, .g5 { grid-column: 1/13; }
+      .g4 { grid-column: 1/13; grid-row: auto; }
+
+      .quote-section { padding: 100px 6%; }
+      .gallery-section { padding: 80px 5%; }
+
+      footer { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cur" id="C"></div>
+  <div class="cur-f" id="CF"></div>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <canvas id="star-canvas"></canvas>
+
+    <div class="orbit-sys">
+      <div class="orbit o1"></div>
+      <div class="orbit o2"></div>
+      <div class="orbit o3"></div>
+    </div>
+
+    <div class="hero-inner">
+      <!-- BMW Roundel -->
+      <div class="bmw-logo">
+        <svg viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <clipPath id="rc"><circle cx="75" cy="75" r="57"/></clipPath>
+          </defs>
+          <!-- Outer decorative ring -->
+          <circle cx="75" cy="75" r="73" fill="none" stroke="rgba(196,169,78,.35)" stroke-width="1"/>
+          <!-- Main white ring -->
+          <circle cx="75" cy="75" r="70" fill="none" stroke="white" stroke-width="2.5"/>
+          <!-- Quadrants -->
+          <g clip-path="url(#rc)">
+            <path d="M75 75 L75 18 A57 57 0 0 0 18 75 Z" fill="#181818"/>
+            <path d="M75 75 L75 18 A57 57 0 0 1 132 75 Z" fill="#ebebeb"/>
+            <path d="M75 75 L132 75 A57 57 0 0 1 75 132 Z" fill="#181818"/>
+            <path d="M75 75 L18 75 A57 57 0 0 0 75 132 Z" fill="#ebebeb"/>
+          </g>
+          <!-- Inner ring border -->
+          <circle cx="75" cy="75" r="57" fill="none" stroke="white" stroke-width="1.5"/>
+          <!-- BMW text -->
+          <text x="75" y="80.5" text-anchor="middle" fill="white" font-family="'DM Mono', monospace" font-size="10.5" font-weight="500" letter-spacing="2.2">‎ ‎ ‎ </text>
+        </svg>
+      </div>
+
+      <p class="hero-eyebrow">A Tribute to Brotherhood &nbsp;·&nbsp; Est. School Days</p>
+      <h1 class="hero-name">UDBHAV</h1>
+      <p class="hero-tagline">Happy Birthday, Legend.</p>
+      <p class="hero-sub">Strength &nbsp;·&nbsp; Loyalty &nbsp;·&nbsp; Brotherhood</p>
+    </div>
+
+    <div class="scroll-hint">
+      <span class="scroll-hint-label">‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ </span>
+      <div class="scroll-hint-line"></div>
+    </div>
+  </section>
+
+  <!-- ============ BROTHERHOOD ============ -->
+  <section class="brotherhood">
+    <span class="bhood-bg-num" aria-hidden="true">01</span>
+
+    <div class="bhood-text reveal">
+      <div class="sec-label">Chapter One</div>
+      <h2>Brotherhood<br>That Lasts.</h2>
+      <p>Years passed. Time's changed. Life became difficult. Yet somehow, our friendship stayed untouched — like it was built from something stronger than circumstance.</p>
+      <p>When life became uncertain and the future felt terrifying, you cared. Even while fighting your own battles, you never stopped being a real friend.</p>
+      <p>And today, seeing you make it this far — it makes me proud beyond words. This is a monument to what we built together.</p>
+    </div>
+
+    <div class="bhood-photo reveal rd2">
+      <img src="pic2.jpeg" alt="Udbhav">
+      <div class="photo-tag">Pen Fest</div>
+    </div>
+  </section>
+
+  <div class="hr"></div>
+
+  <!-- ============ GALLERY ============ -->
+  <section class="gallery-section">
+    <span class="gallery-bg-num" aria-hidden="true">02</span>
+
+    <div class="gallery-header reveal">
+      <div class="sec-label">Chapter Two</div>
+      <h2>Memories</h2>
+      <p>Moments fade. Brotherhood doesn't.</p>
+    </div>
+
+    <div class="gal">
+      <div class="g g1 reveal">
+        <img src="pic1.jpeg" alt="School Days">
+        <div class="g-cap">Farewell Afterparty</div>
+        <div class="g-num">01</div>
+      </div>
+      <div class="g g2 reveal rd1">
+        <img src="pic3.jpeg" alt="Unbreakable">
+        <div class="g-cap">A Random Event</div>
+        <div class="g-num">02</div>
+      </div>
+      <div class="g g3 reveal rd2">
+        <img src="pic4.jpeg" alt="Brotherhood">
+        <div class="g-cap">The Golden Trio</div>
+        <div class="g-num">03</div>
+      </div>
+      <div class="g g4 reveal rd1">
+        <img src="pic7.jpeg" alt="The Legend">
+        <div class="g-cap">Hangout</div>
+        <div class="g-num">04</div>
+      </div>
+      <div class="g g5 reveal rd3">
+        <img src="pic6.jpeg" alt="Still Together">
+        <div class="g-cap">Udbhav's Birthday Party</div>
+        <div class="g-num">05</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="hr"></div>
+
+  <!-- ============ QUOTE ============ -->
+  <section class="quote-section">
+    <div class="quote-bg-inf" aria-hidden="true">∞</div>
+    <div class="quote-gold-line"></div>
+    <p class="big-quote reveal">
+      "Some people become friends.<br>
+      Some become memories.<br>
+      And a rare few become <span class="hl">family</span> —<br>
+      without anyone ever choosing it."
+    </p>
+    <div class="quote-attr reveal rd1">— A brotherhood built to last</div>
+  </section>
+
+  <div class="hr"></div>
+
+  <!-- ============ FINALE ============ -->
+  <section class="finale">
+    <span class="finale-bg-num" aria-hidden="true">03</span>
+
+    <div class="finale-text reveal">
+      <div class="sec-label">Chapter Three</div>
+      <h2>Forever<br><span class="outline">Brothers.</span></h2>
+      <div class="gold-sep"></div>
+      <p>You made it through every hardship. Every uncertain chapter. Every moment where giving up would have been easier.</p>
+      <p>Happy Birthday, Udbhav. Thank you for staying through every chapter. This one's for you — always.</p>
+    </div>
+
+    <div class="finale-logo reveal rd2">
+      <div class="finale-logo-wrap">
+        <div class="finale-orbit fo1"></div>
+        <div class="finale-orbit fo2"></div>
+        <svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" width="220" height="220">
+          <defs>
+            <clipPath id="rc2"><circle cx="110" cy="110" r="84"/></clipPath>
+          </defs>
+          <circle cx="110" cy="110" r="108" fill="none" stroke="rgba(196,169,78,.25)" stroke-width="1"/>
+          <circle cx="110" cy="110" r="104" fill="none" stroke="rgba(196,169,78,.55)" stroke-width="2"/>
+          <g clip-path="url(#rc2)">
+            <path d="M110 110 L110 26 A84 84 0 0 0 26 110 Z"  fill="#141414"/>
+            <path d="M110 110 L110 26 A84 84 0 0 1 194 110 Z" fill="#e6e6e6"/>
+            <path d="M110 110 L194 110 A84 84 0 0 1 110 194 Z" fill="#141414"/>
+            <path d="M110 110 L26 110 A84 84 0 0 0 110 194 Z" fill="#e6e6e6"/>
+          </g>
+          <circle cx="110" cy="110" r="84" fill="none" stroke="rgba(196,169,78,.55)" stroke-width="1.5"/>
+          <text x="110" y="116" text-anchor="middle" fill="white" font-family="'DM Mono', monospace" font-size="14" font-weight="500" letter-spacing="2.8">‎ ‎ ‎ </text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer>
+    <div class="foot-l">Built with Brotherhood · Loyalty · Memories</div>
+    <div class="foot-r">Happy Birthday, Udbhav.</div>
+  </footer>
+
+  <script>
+    // ─── Cursor ───
+    const C = document.getElementById('C');
+    const CF = document.getElementById('CF');
+    let mx = 0, my = 0, fx = 0, fy = 0;
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      C.style.left = mx + 'px'; C.style.top = my + 'px';
+    });
+    (function tick() {
+      fx += (mx - fx) * .11; fy += (my - fy) * .11;
+      CF.style.left = fx + 'px'; CF.style.top = fy + 'px';
+      requestAnimationFrame(tick);
+    })();
+    document.querySelectorAll('.g, .bhood-photo, a').forEach(el => {
+      el.addEventListener('mouseenter', () => { C.style.width = '18px'; C.style.height = '18px'; CF.style.transform = 'translate(-50%,-50%) scale(1.6)'; });
+      el.addEventListener('mouseleave',  () => { C.style.width = '10px'; C.style.height = '10px'; CF.style.transform = 'translate(-50%,-50%) scale(1)'; });
+    });
+
+    // ─── Star particles ───
+    const sc = document.getElementById('star-canvas');
+    const sctx = sc.getContext('2d');
+    function resizeSC() { sc.width = window.innerWidth; sc.height = window.innerHeight; }
+    resizeSC();
+    window.addEventListener('resize', resizeSC);
+
+    const stars = Array.from({ length: 140 }, () => ({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: Math.random() * 1.3 + .15,
+      vy: Math.random() * .28 + .04,
+      vx: (Math.random() - .5) * .18,
+      op: Math.random() * .45 + .08,
+      gold: Math.random() > .65
+    }));
+
+    function drawStars() {
+      sctx.clearRect(0, 0, sc.width, sc.height);
+      stars.forEach(s => {
+        sctx.beginPath();
+        sctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        sctx.fillStyle = s.gold ? `rgba(196,169,78,${s.op})` : `rgba(255,255,255,${s.op * .6})`;
+        sctx.fill();
+        s.y -= s.vy; s.x += s.vx;
+        if (s.y < -4)  { s.y = sc.height + 4; s.x = Math.random() * sc.width; }
+        if (s.x < -4 || s.x > sc.width + 4) s.x = Math.random() * sc.width;
+      });
+      requestAnimationFrame(drawStars);
+    }
+    drawStars();
+
+    // ─── Scroll reveal ───
+    const revealEls = document.querySelectorAll('.reveal');
+    const ro = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
+    }, { threshold: .12 });
+    revealEls.forEach(el => ro.observe(el));
+  </script>
+</body>
+</html>
